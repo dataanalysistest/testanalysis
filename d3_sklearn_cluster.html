@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Bar Chart</title>
+
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+
+    <style>
+      html, body {
+        margin: 0;
+        height: 80%
+      }
+    </style>
+  </head>
+
+  <body>
+    <script>
+
+    var svg = d3.select("body")
+                .append("svg")
+                .attr("height","80%")
+                .attr("width","80%");
+
+    function barchart(val) {
+      var dataArray = JSON.parse(val);
+
+      svg.selectAll("circle")
+          .data(dataArray)
+          .enter()
+          .append("circle")
+          .attr("cx", function(d) {return 50+d.x})
+          .attr("cy", function(d) {return 50+d.y})
+          .attr("r", function(d)  {return d.r})
+          .attr("fill", function(d) {if (d.c==0) {return "red"} else if (d.c==1 ) {return "blue"} else return "green"});
+    }
+
+    function getOutput(p) {
+      getRequest(
+        'cgi-bin/sklearn_cluster.py?nb_clusters=' + p,
+         drawOutput,  // handle successful request
+         drawError    // handle error
+      ); 
+      return false;
+    }  
+
+    function drawError() {
+      var container = document.getElementById('output');
+      container.innerHTML = 'there was an error!';
+    }
+
+    function drawOutput(responseText) {
+      var container = document.getElementById('output');
+      container.innerHTML = responseText;
+    
+      barchart(responseText);
+    }
+
+    function getRequest(url, success, error) {
+      var req = false;
+      req = new XMLHttpRequest();
+      if (!req) return false;
+      req.onreadystatechange = function(){
+        if(req.readyState == 4) {
+          return req.status === 200 ? 
+            success(req.responseText) : error(req.status);
+        }
+      }  
+      req.open("GET", url, true);
+      req.send(null);
+      return req;
+    }
+
+    </script>
+
+    <p id="output"></p>
+
+    <form name=formp> 
+      <INPUT TYPE=button NAME=Taste VALUE="Number of Clusters" onclick='getOutput(formp.nb_clusters.value)'>
+      <INPUT TYPE=number NAME=nb_clusters VALUE="" SIZE=5>
+    </form>
+  </body>
+</html>
