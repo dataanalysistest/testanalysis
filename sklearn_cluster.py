@@ -25,9 +25,9 @@ else:
 
 kmeans = KMeans(n_clusters=nb_clusters, random_state=0).fit_predict(XA)
 
-#plt.scatter(XA[:,0], XA[:,1], c = kmeans)
+plt.scatter(XA[:,0], XA[:,1], c = kmeans)
 
-#plt.show()
+plt.show()
 
 
 print("Content-type: text/plain; charset=iso-8859-1\n")
